@@ -8,24 +8,16 @@ from ycmd import utils
 class MailCompleter( Completer ):
     def __init__( self, user_options ):
         super( MailCompleter, self ).__init__( user_options )
-        self._wrapper = self.FindReattachToUserNamespaceBinary()
         self._binary = self.FindLbdbqBinary()
         self._candidates = None
 
     def FindLbdbqBinary( self ):
         return utils.PathToFirstExistingExecutable( [ 'lbdbq' ] )
 
-    def FindReattachToUserNamespaceBinary( self ):
-        return utils.PathToFirstExistingExecutable(
-                [ 'reattach-to-user-namespace' ] )
-
     def Lbdbq( self, query ):
         if not self._binary:
             return None
-        if self._wrapper:
-            command = [ self._wrapper, self._binary, query ]
-        else:
-            command = [ self._binary, query ]
+        command = [ self._binary, query ]
         proc = utils.SafePopen( command, stdout = subprocess.PIPE )
         out, err = proc.communicate()
         if not proc.returncode:
